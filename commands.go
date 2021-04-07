@@ -344,7 +344,7 @@ type Cmdable interface {
 	GeoHash(ctx context.Context, key string, members ...string) *StringSliceCmd
 
 	MetaKeys(ctx context.Context, pattern string) *StringCmd
-	MetaKeysWithFilters(ctx context.Context, pattern string, filters string) *StringCmd
+	MetaKeysWithFilter(ctx context.Context, pattern string, filters string) *StringCmd
 	GetMeta(ctx context.Context, key string) *StringCmd
 	GetRowCount(ctx context.Context, key string) *StringCmd
 }
@@ -2929,7 +2929,7 @@ func (c cmdable) MetaKeys(ctx context.Context, pattern string) *StringCmd {
 	return cmd
 }
 
-func (c cmdable) MetaKeysWithFilters(ctx context.Context, pattern string, filters string) *StringCmd {
+func (c cmdable) MetaKeysWithFilter(ctx context.Context, pattern string, filters string) *StringCmd {
 	args := []interface{}{"METAKEYSWITHFILTER", pattern, filters}
 	cmd := NewStringCmd(ctx, args...)
 	_ = c(ctx, cmd)
