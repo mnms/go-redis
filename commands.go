@@ -343,7 +343,10 @@ type Cmdable interface {
 	GeoDist(ctx context.Context, key string, member1, member2, unit string) *FloatCmd
 	GeoHash(ctx context.Context, key string, members ...string) *StringSliceCmd
 
-	RowCount(ctx context.Context, key string) *StringCmd
+	MetaKeys(ctx context.Context, pattern string) *StringCmd
+	MetaKeysWithFilters(ctx context.Context, pattern string, filters string) *StringCmd
+	GetMeta(ctx context.Context, key string) *StringCmd
+	GetRowCount(ctx context.Context, key string) *StringCmd
 }
 
 type StatefulCmdable interface {
@@ -2919,7 +2922,28 @@ func (c cmdable) GeoPos(ctx context.Context, key string, members ...string) *Geo
 	return cmd
 }
 
-func (c cmdable) RowCount(ctx context.Context, key string) *StringCmd {
+func (c cmdable) MetaKeys(ctx context.Context, pattern string) *StringCmd {
+	args := []interface{}{"METAKEYS", pattern}
+	cmd := NewStringCmd(ctx, args...)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
+func (c cmdable) MetaKeysWithFilters(ctx context.Context, pattern string, filters string) *StringCmd {
+	args := []interface{}{"METAKEYSWITHFILTER", pattern, filters}
+	cmd := NewStringCmd(ctx, args...)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
+func (c cmdable) GetMeta(ctx context.Context, key string) *StringCmd {
+	args := []interface{}{"GETMETA", key}
+	cmd := NewStringCmd(ctx, args...)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
+func (c cmdable) GetRowCount(ctx context.Context, key string) *StringCmd {
 	args := []interface{}{"GETROWCOUNT", key}
 	cmd := NewStringCmd(ctx, args...)
 	_ = c(ctx, cmd)
