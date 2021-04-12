@@ -343,7 +343,7 @@ type Cmdable interface {
 	GeoDist(ctx context.Context, key string, member1, member2, unit string) *FloatCmd
 	GeoHash(ctx context.Context, key string, members ...string) *StringSliceCmd
 
-	MetaKeys(ctx context.Context, pattern string) *StringCmd
+	MetaKeys(ctx context.Context, pattern string) *StringSliceCmd
 	MetaKeysWithFilter(ctx context.Context, pattern string, filters string) *StringCmd
 	GetMeta(ctx context.Context, key string) *StringCmd
 	GetRowCount(ctx context.Context, key string) *StringCmd
@@ -2922,9 +2922,9 @@ func (c cmdable) GeoPos(ctx context.Context, key string, members ...string) *Geo
 	return cmd
 }
 
-func (c cmdable) MetaKeys(ctx context.Context, pattern string) *StringCmd {
+func (c cmdable) MetaKeys(ctx context.Context, pattern string) *StringSliceCmd {
 	args := []interface{}{"METAKEYS", pattern}
-	cmd := NewStringCmd(ctx, args...)
+	cmd := NewStringSliceCmd(ctx, args...)
 	_ = c(ctx, cmd)
 	return cmd
 }

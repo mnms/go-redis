@@ -837,6 +837,26 @@ func (c *ClusterClient) process(ctx context.Context, cmd Cmder) error {
 	return lastErr
 }
 
+// GetMasterNodesCount returns number of master nodes in the cluster
+func (c *ClusterClient) GetMasterNodesCount(ctx context.Context) (int, error) {
+	state, err := c.state.ReloadOrGet(ctx)
+	if err != nil {
+		return -1, err
+	}
+
+	return len(state.Masters), err
+}
+
+// GetSlaveNodesCount returns number of slave nodes in the cluster
+func (c *ClusterClient) GetSlaveNodesCount(ctx context.Context) (int, error) {
+	state, err := c.state.ReloadOrGet(ctx)
+	if err != nil {
+		return -1, err
+	}
+
+	return len(state.Slaves), err
+}
+
 // ForEachMaster concurrently calls the fn on each master node in the cluster.
 // It returns the first error if any.
 func (c *ClusterClient) ForEachMaster(
