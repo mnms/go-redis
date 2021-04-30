@@ -347,6 +347,7 @@ type Cmdable interface {
 	MetaKeysWithFilter(ctx context.Context, pattern string, filters string) *StringCmd
 	GetMeta(ctx context.Context, key string) *StringCmd
 	GetRowCount(ctx context.Context, key string) *StringCmd
+	KNNScan(ctx context.Context, dataKeys string, knnSize string, numColumnsAndIndicesToSelect string, featureColIndexAndDimensions string, knnType string, knnThreshold string, vectors string) *StringSliceCmd
 }
 
 type StatefulCmdable interface {
@@ -2946,6 +2947,13 @@ func (c cmdable) GetMeta(ctx context.Context, key string) *StringCmd {
 func (c cmdable) GetRowCount(ctx context.Context, key string) *StringCmd {
 	args := []interface{}{"GETROWCOUNT", key}
 	cmd := NewStringCmd(ctx, args...)
+	_ = c(ctx, cmd)
+	return cmd
+}
+
+func (c cmdable) KNNScan(ctx context.Context, dataKeys string, knnSize string, numColumnsAndIndicesToSelect string, featureColIndexAndDimensions string, knnType string, knnThreshold string, vectors string) *StringSliceCmd {
+	args := []interface{}{"KNNSCAN", knnSize, numColumnsAndIndicesToSelect, featureColIndexAndDimensions, knnType, knnThreshold, "1", vectors, dataKeys}
+	cmd := NewStringSliceCmd(ctx, args...)
 	_ = c(ctx, cmd)
 	return cmd
 }
