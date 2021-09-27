@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"fmt"
 	"context"
 	"errors"
 	"io"
@@ -348,7 +349,7 @@ type Cmdable interface {
 	GetMeta(ctx context.Context, key string) *StringCmd
 	GetRowCount(ctx context.Context, key string) *StringCmd
 	KNNScan(ctx context.Context, dataKeys []interface{}, knnSize string, numColumnsAndIndicesToSelect string, featureColIndexAndDimensions string, knnType string, knnThreshold string, numVectors string, vectors string) *StringSliceCmd
-	NVWrite(ctx context.Context, dataKeys []interface{}, partitionMeta string, numberOfColumns string, datas ...string) *StringCmd
+	NVWrite(ctx context.Context, dataKey string, partitionMeta string, numberOfColumns string, data ...string) *StringCmd
 }
 
 type StatefulCmdable interface {
@@ -2965,22 +2966,24 @@ func (c cmdable) KNNScan(ctx context.Context, dataKeys []interface{}, knnSize st
 	for i, dataKey := range dataKeys {
 		args[8+i] = dataKey
 	}
+	fmt.Println(args)
 	cmd := NewStringSliceCmd(ctx, args...)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-func (c cmdable) NVWrite(ctx context.Context, dataKeys []interface{}, partitionMeta string, numberOfColumns string, data ...string) *StringCmd {
+func (c cmdable) NVWrite(ctx context.Context, dataKey string, partitionMeta string, numberOfColumns string, data ...string) *StringCmd {
 	// "NVWRITE" "D:{100:217:11:219:00:4:41654:5:4}"                                                                            "4:216:218:3:4"                        "219"                "0"                     "20160711000310" "ELG" "2629051000"
 	// COMMAND    DATAKEY-D:{table_id:partitioncolumnindex(starts with 1):value:partitioncolumn2index(starts with 1):value...}  4 partition column : 216, 218, 3, 4    Total column number  Tree index(not used)    Values
-	args := make([]interface{}, 4 + len(data))
+	args := make([]interface{}, 5+len(data))
 	args[0] = "NVWRITE"
-	args[1] = dataKeys
+	args[1] = "D:{" + dataKey + "}"
 	args[2] = partitionMeta
-	args[3] = "0"
+	args[3] = numberOfColumns
+	args[4] = "0"
 
 	for i, val := range data {
-		args[4+i] = val
+		args[5+i] = val
 	}
 
 	cmd := NewStringCmd(ctx, args...)
