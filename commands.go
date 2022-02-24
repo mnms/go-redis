@@ -2963,10 +2963,11 @@ func (c cmdable) KNNScan(ctx context.Context, dataKeys []interface{}, knnSize st
 	args[5] = knnThreshold
 	args[6] = numVectors
 	args[7] = vectors
+
 	for i, dataKey := range dataKeys {
 		args[8+i] = dataKey
 	}
-	fmt.Println(args)
+
 	cmd := NewStringSliceCmd(ctx, args...)
 	_ = c(ctx, cmd)
 	return cmd
